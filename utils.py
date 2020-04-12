@@ -15,4 +15,3 @@ def generate_exponential():
 
 def generate_gaussian(median, sdev):
     return np.random.normal(loc=median, scale=sdev)
-

@@ -1,32 +1,38 @@
+import time
+
 class Node:
     def __init__(self, queue_size):
         self.queue_size = queue_size
-        self.process_queue = []
+        self.service_queue = []
+        self.arrival_queue = []
+        self.static_service_queue = []
+        self.static_arrival_queue = []
         self.idle = True
-        self.active_job = None
+        self.time_serving = 0
 
     def get_utilization(self):
         return not self.idle
 
-    def add_process(self, process):
-        if len(self.process_queue) >= self.queue_size:
-            return False
-        else:
-            self.process_queue.append(process)
+    def add_process(self, arrival, service):
+        self.service_queue.append(service)
+        self.arrival_queue.append(arrival)
+        self.static_service_queue.append(service)
+        self.static_arrival_queue.append(arrival)
+    def at_capacity(self):
+        return len(self.arrival_queue) == self.queue_size
 
-        # if the node is idle start this job which was just queued
-        if self.idle:
-            self.process_item()
+    def finish_serving(self):
+        self.arrival_queue = self.arrival_queue[1:]
+        self.service_queue = self.service_queue[1:]
+        self.time_serving = 0
 
-    def process_item(self):
-        # Check if there is anything in the queue or if we're already serving
-        # if we are then we can't process the next job so return false
-        if len(self.process_queue) is 0 or not self.idle:
-            return False
-        # In this case we can process the next job so put it as the active job
-        elif self.idle:
-            self.active_job = self.process_queue.pop()
+    def update(self, cur_time):
+        num_tasks = len(self.arrival_queue)
+        if num_tasks is 0:
+            return
+        if self.idle and cur_time > self.arrival_queue[0]:
             self.idle = False
-        # Else case return False
-        else:
-            return False
+            self.time_serving = time.time()
+            return
+        if not self.idle and cur_time > self.time_serving + self.service_queue[0]:
+            self.finish_serving()
