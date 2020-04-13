@@ -7,7 +7,8 @@ def generate(distn):
         return uniform
     if distn is "exponential":
         return generate_exponential()
-
+    if distn is "gaussian":
+        return generate_exponential()
 
 def generate_exponential():
     return np.random.exponential()

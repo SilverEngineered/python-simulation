@@ -1,7 +1,7 @@
 import time
 
 class Node:
-    def __init__(self, queue_size):
+    def __init__(self, queue_size, speed_mulitplier):
         self.queue_size = queue_size
         self.service_queue = []
         self.arrival_queue = []
@@ -9,6 +9,7 @@ class Node:
         self.static_arrival_queue = []
         self.idle = True
         self.time_serving = 0
+        self.speed_multiplier = speed_mulitplier
 
     def get_utilization(self):
         return not self.idle
@@ -18,6 +19,7 @@ class Node:
         self.arrival_queue.append(arrival)
         self.static_service_queue.append(service)
         self.static_arrival_queue.append(arrival)
+
     def at_capacity(self):
         return len(self.arrival_queue) == self.queue_size
 
@@ -34,5 +36,5 @@ class Node:
             self.idle = False
             self.time_serving = time.time()
             return
-        if not self.idle and cur_time > self.time_serving + self.service_queue[0]:
+        if not self.idle and cur_time > self.time_serving + (self.service_queue[0]/self.speed_multiplier):
             self.finish_serving()
